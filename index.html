@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select Statistical Tests</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">Select Statistical Tests</h1>
+    <form id="testForm" class="space-y-2">
+      
+      <label><input type="checkbox" name="test" value="Confidence Interval for a Population mean"> Confidence Interval for a Population mean
+        
+      </label><br>
+      <label><input type="checkbox" name="test" value="Confidence Interval for a Proportion"> Confidence Interval for a Proportion</label><br>
+      
+      <label><input type="checkbox" name="test" value="Confidence Interval for the Diff. Between 2 Means (Independent Samples)">  Confidence Interval for the Diff. Between 2 Means (Independent Samples)</label><br>
+      
+      <label><input type="checkbox" name="test" value="Confidence Interval for Paired Data (Dependent Samples)">  Confidence Interval for Paired Data (Dependent Samples)</label><br>
+      
+      <label><input type="checkbox" name="test" value="Confidence Interval for the Difference Between 2 Proportions"> Confidence Interval for the Difference Between 2 Proportions
+</label><br>
+      
+      <label><input type="checkbox" name="test" value="Hypothesis Test for a Population Mean">  Hypothesis Test for a Population Mean</label><br>
+      
+      <label><input type="checkbox" name="test" value="Hypothesis Test for a Population Proportion">  Hypothesis Test for a Population Proportion</label><br>
+      
+      <label><input type="checkbox" name="test" value="Hypothesis Test for the Difference Between 2 Means (Independent Samples)">  Hypothesis Test for the Difference Between 2 Means (Independent Samples)</label><br>
+      
+      <label><input type="checkbox" name="test" value="Hypothesis Test for Paired Data (Dependent Samples)">  Hypothesis Test for Paired Data (Dependent Samples)</label><br>
+      
+      <label><input type="checkbox" name="test" value="Hypothesis Test for the Difference Between 2 Proportions">  Hypothesis Test for the Difference Between 2 Proportions</label><br>
+      
+      <label><input type="checkbox" name="test" value="Chi-Square Goodness of Fit Test">  Chi-Square Goodness of Fit Test
+</label><br>
+      
+      <label><input type="checkbox" name="test" value="Chi-Square Test for Independence">  Chi-Square Test for Independence
+</label><br>
+      
+      <label><input type="checkbox" name="test" value="Chi-Square Test for Homogeneity">   Chi-Square Test for Homogeneity
+      </label><br>
+
+
+<div class="flex justify-between items-center mt-6">
+  <div class="space-x-4">
+    <button id="selectAllBtn" type="button" class="bg-green-500 text-white px-4 py-2 rounded">Select All</button>
+    <button id="deselectAllBtn" type="button" class="bg-red-500 text-white px-4 py-2 rounded">Deselect All</button>
+  </div>
+
+
+  <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Next</button>
+</div>
+
+     
+      <div id="hintModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white p-4 rounded relative max-w-md w-full">
+
+        </div>
+      </div>
+
+    </form>
+
+  <script>
+    document.getElementById('testForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const selected = Array.from(document.querySelectorAll('input[name="test"]:checked'))
+        .map(cb => cb.value);
+      localStorage.setItem('selectedTests', JSON.stringify(selected));
+      window.location.href = 'test.html';
+
+    });
+  </script>
+
+    <script>
+document.getElementById('selectAllBtn').addEventListener('click', function () {
+        const checkboxes = document.querySelectorAll('input[name="test"]');
+        checkboxes.forEach(cb => cb.checked = true);
+      });
+    </script>
+    <script>
+      document.getElementById('deselectAllBtn').addEventListener('click', function () {
+        const checkboxes = document.querySelectorAll('input[name="test"]');
+        checkboxes.forEach(cb => cb.checked = false)
+      
+      });
+    </script>
+
+</body>
+</html>
