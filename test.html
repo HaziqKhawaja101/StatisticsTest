@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Which statistical test should be used to solve this problem?</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-2xl w-full bg-white p-6 rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">Which test should be used?</h1>
+    <p id="promptText" class="text-lg mb-6"></p>
+
+    <div id="options" class="space-y-2 mb-6"></div>
+
+    <div class="flex items-center mt-4">
+      <button id="quitBtn" class="bg-red-500 text-white px-4 py-2 rounded mr-auto">Quit</button>
+      
+      <div class="flex space-x-2">
+        <button id="nextBtn" class="bg-blue-500 text-white px-4 py-2 rounded hidden">Next Question</button>
+        <button id="allBtn" class="bg-green-500 text-white px-4 py-2 rounded hidden">Select All</button>
+        <button id="noneBtn" class="bg-red-500 text-white px-4 py-2 rounded hidden">Deselect All</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const testNames = [
+      "Confidence Interval for a Population mean",
+      "Confidence Interval for a Proportion",
+      "Confidence Interval for the Diff. Between 2 Means (Independent Samples)",
+      "Confidence Interval for Paired Data (Dependent Samples)",
+      "Confidence Interval for the Difference Between 2 Proportions",
+      "Hypothesis Test for a Population Mean",
+      "Hypothesis Test for a Population Proportion",
+      "Hypothesis Test for the Difference Between 2 Means (Independent Samples)",
+      "Hypothesis Test for Paired Data (Dependent Samples)",
+      "Hypothesis Test for the Difference Between 2 Proportions",
+      "Chi-Square Goodness of Fit Test",
+      "Chi-Square Test for Independence",
+      "Chi-Square Test for Homogeneity"
+    ];
+
+    const prompts = {
+      "Confidence Interval for a Population mean": [
+        'Estimate the length of time that it takes the average first grader to tie their shoes and state the margin of error. 1008 first graders were surveyed.',
+        'Estimate the average number of pinecones that a 30-year-old pine tree produces each year and state the margin of error. Fifty-five pine trees were observed over a one-year period.',
+        'You own a restaurant and want to find out how much lettuce is consumed on an average day. You look at the total orders during each of the 45 consecutive days.',
+        'You want to estimate the average number of texts that college students send each day. You survey 150 college students.',
+        'You ask 300 people how happy they feel on a scale from 1 to 100. Estimate the mean happiness.',
+        'What is the average loss for new businesses during their first year? 82 new businesses were tracked.',
+        'A new surgery technique boasts of a small incision size. The technique was used on 90 patients. Find a 95% confidence interval for the mean incision size.',
+        'You are interested in estimating the average number of used textbooks that students sell per year. You surveyed 92 students at the end of the academic year.',
+        'You are interested in estimating the average number of hamburgers Americans eat each month. You survey 200 Americans.',
+        'You are interested in estimating the number of squirrels per acre in the area. The number of squirrels was measured at 98 acres.'
+
+      ],
+      "Confidence Interval for a Proportion": [
+        'How often do first dates end with a kiss? 85 first dates were observed.',
+        'How much of the food that you buy must be thrown out? A refrigerator was monitored that had 45 perishable items.',
+        'You have conducted a survey about whether Americans are in favor of additional nuclear power plants being constructed. Determine a likely range of values for the true percent of Americans in favor of the proposition.',
+        'What percent of parolees return to prison because of parole violations? 800 parolees were tracked.',
+        'How likely are drivers to come to a complete stop at a stop sign? A researcher placed a hidden camera at a stop sign and observed 150 cars to see if they came to a complete stop.',
+        'How much more likely is it that a pine nut planted in fertilized soil will germinate compared to pine nuts in nature? Biologists know that 12% of all pine nuts in nature will germinate. 55 pine nuts were planted in fertilized soil. Find the appropriate confidence interval.',
+        'How likely are drivers to stop and give assistance to a person whose car is stuck in a snow bank? A researcher drove a car into the snow bank and waved at 85 cars that passed by.',
+        'How likely are people to agree to answer a phone questionnaire when a market researcher calls? A market researcher called 150 people and wrote down the results.',
+        'What percent of parolees return to prison because of parole violations? 800 parolees were monitored.',
+        'How likely is it that a chick will successfully mature to adulthood? 200 newborn chicks were tracked.'
+
+      ],
+      "Confidence Interval for the Diff. Between 2 Means (Independent Samples)": [
+        'How much more effective against insects are plants with an insect-resistant gene than plants without this gene? 500 plants with the gene and 500 plants without the gene were measured for the number of insects per plant.',
+        'How many fewer calories do vegetarians consume compared to meat eaters? 90 vegetarians and 90 meat eaters were monitored for their caloric intake.',
+        'How much longer do incandescent light bulbs last compared to fluorescent bulbs? 55 incandescent bulbs and 45 fluorescent bulbs were observed.',
+        'How much more traffic is there on Friday afternoon compared with Saturday afternoon? The number of cars was tracked on 40 randomly selected Fridays and 40 randomly selected Saturdays.',
+        'How much more money do students have to spend on private universities compared with public universities? The costs of forty private universities and forty public universities were researched.',
+        'A study was conducted to determine how much faster the average fast food restaurant serves customers vs. the service time of sit-down restaurants. Ninety fast food restaurants and eighty sit-down restaurants were observed.',
+        'How much greater is the average cholesterol of egg eaters vs. egg abstainers? Of 100 volunteers, fifty were randomly chosen to refrain from eating eggs, while the other fifty were made to eat at least two eggs a day.',
+        'How much longer will swimmers stay in a heated pool compared with an unheated pool? When the pool was heated, 67 swimmers were observed, and when the pool was unheated, 55 swimmers were observed.',
+        'How much larger is the average bail that is set for male defendants than for female defendants? 55 male defendants and 35 female defendants were studied.',
+        'When road conditions are snowy, how much faster do people who have four-wheel drive vehicles drive compared to those who have two-wheel drive vehicles? 45 four-wheel drive vehicles and 40 two-wheel drive vehicles were clocked.'
+
+      ],
+      "Confidence Interval for Paired Data (Dependent Samples)": [
+        'How much faster can people type using their dominant hand vs. their non-dominant hand? Words per minute were charted first for 100 people using their dominant hand only and then for the same people using only their non-dominant hand.', 
+        'How much does personal spending increase after a tax cut? 1500 people were studied before and after the tax cut.', 
+        'How much does a speed reading course help. A word per minute read was charted before and after the course for 80 students.',
+        'How many more people ride the gondola on Saturdays compared to Sundays? Saturday and Sunday counts were tallied for 15 randomly selected weekends.',
+        'How effective is a sleeping pill. 500 people took part in an experiment where they charted the number of hours they slept without the pill and the number of hours with the pill.', 
+        'How many more minutes do students spend doing math homework compared to attending class? 46 math students were asked how many minutes they spent last week in class and how many minutes they spent doing their homework.',
+        'A child psychologist wants to estimate the mean difference between the number of words children can recall when they hear them and the number of words they can recall when they see them on a written page. Fifty-two children were each read to and asked how many words they recalled, and then they were asked to look at a book and asked how many words they recalled.',
+        '85 people were observed to see how many seconds they spend brushing their teeth and how many seconds they spend brushing their hair. Estimate the average difference.',
+        'Forty-five students were asked how many hours they spend per week enjoying outdoor entertainment and how many hours they spend per week enjoying indoor entertainment. Estimate the mean difference between the average outdoor and indoor entertainment per week that students enjoy.',
+        'How much better has the NASDAQ done than the Dow Jones Industrial Average this year? The daily point gains and losses have been charted since January 2.'
+
+      ],
+      "Confidence Interval for the Difference Between 2 Proportions": [
+        'How many more minutes do students spend doing math homework compared to attending class? 46 math students were asked how many minutes they spent last week in class and how many minutes they spent doing their homework.',
+        'How much more likely are athletes to pull a muscle if they do not stretch before playing? 600 athletes were observed who did not stretch, and 600 athletes were observed who did stretch to see if they became injured.',
+        'What is the difference between the percentage of smokers who develop lung cancer compared with the percentage of non-smokers who develop lung cancer? 1000 smokers and 1000 non-smokers were observed for 10 years.',
+        'How much more effective is putting an infant in a baby swing to stop crying compared to just talking to the infant? 500 crying infants were put into baby swings, and 300 were talked to.',
+        'How much more likely are athletes to pull a muscle if they do not stretch before playing? 600 athletes were observed who did not stretch, and 600 athletes were observed who did stretch to see if they became injured.',
+        'How much more often do women order dessert compared to men? 85 men and 73 women at a restaurant were observed to see if they ordered dessert.',
+        'How much more likely are college teens than non-college teens to drink alcohol? 90 college teens and 90 non-college teens were asked if they had an alcoholic beverage last weekend.',
+        'How much greater is the proportion of senior citizens who attend a play at least once per year compared with attendance for people in their twenties? 100 senior citizens and 100 people in their twenties were questioned.',
+        'How effective are instant store coupons in getting customers to purchase an item 500 customers were observed when the instant store coupon was available, and 400 were observed when it was not available.',
+        'How much better is natural sunlight compared to indoor lighting when growing plants? 5000 seeds were planted outside and 4000 inside to see how many would germinate.'
+
+      ],
+      "Hypothesis Test for a Population Mean": [
+        'Do people spend on average fewer than 2 weeks per year on vacation? 1500 people were surveyed.',
+        'The average SAT score for UCLA students is 1264. You are interested in seeing if the average SAT score is different for UCLA students who come from rural areas. 65 such students were asked what their SAT scores were.',
+        'An amusement park owner is considering changing her model from pay for each ride to   one fee for all rides.   She observes 2000 guests to see if they spend less than the $30 fee that she intends to put into place.',
+        'Do mice perform better after being given extra protein? A maze where mice typically average 35 seconds to complete was tested by 100 mice that were given extra protein.',
+        'Ten years ago, the age of CEO s averaged 62 years old. Has this number changed? The ages of 80 current CEOs were collected.',
+        'The mean age of marriage in America is 24 years old. You are interested in seeing if the mean age of marriage for those with a weight problem is different. Ninety-two young people with a weight problem were observed until they got married.',
+        'Last year, the mean number of political prisoners per country was 2509. You will research 31 countries this year and are interested in whether the mean number has changed.',
+        'Last year, the average hotel room at Stateline was $60 per night. A study was done to determine if the average cost per night for rooms this year has increased. What can be concluded?', 
+        'Do customers at Safeway wait in the checkout line on average longer than 5 minutes? 150 randomly selected Safeway customers were observed.',
+        'The cafeteria estimates that it will take an average of 95 patrons per day to break even. The cafeteria was observed over 60 days to see if there would be an average of more than 95 patrons.'
+
+      ],
+      "Hypothesis Test for a Population Proportion": [
+        'Are blonde women more likely to have a boyfriend than the rest of the world? Currently, 38% of all women have a boyfriend. A random sample of 300 blondes was investigated.',
+        'In any given year, 0.1% of all pine trees will fall. This year, 10,000 trees that were given a new fertilizer were tracked to see if fewer of them would fall.',
+        'Before the passage of the new business assistance act, 65% of all new businesses closed their doors within one year of opening. 52 businesses that have opened since are being tracked. Has the business failure rate declined since the passage of the act?',
+        'Does the home team win the majority of the time? 100 games were observed.',
+        'Will the democrat win the election? 1500 randomly selected voters were given an exit poll.',
+        'It is known that 12% of all men feel that more electric cars should be driven. 1000 women were surveyed about how they feel. Are women more likely to feel this way?',
+        '8% of all Americans experience a major medical problem in a given year. This year, 900 vegetarians were tracked to see if fewer of them experienced a major medical problem.',
+        'Do more than 99.9% of women who are given the vaccine stay free of ovarian cancer? 30,000 women were observed.',
+        'Are the majority of community college students in college in order to better their careers? 75 college students were surveyed.',
+        'Are smokers more likely to litter while camping than everybody else? Currently, 8% of all campers litter. A random sample of 100 smokers was observed.'
+
+      ],
+      "Hypothesis Test for the Difference Between 2 Means (Independent Samples)": [
+        'Are people who drink coffee more stressed than those who do not drink coffee? 300 coffee drinkers and 200 non-coffee drinkers were tested for stress level (on a 100-point scale).',
+        'Is the recovery time from ACL surgery shorter for patients who have health insurance? 300 patients with health insurance and 200 patients without health insurance were studied for their recovery time after ACL surgery.',
+        'Can chimps learn more words than apes? Biologists spent a year with eighty chimps and 80 apes teaching them vocabulary.',
+        'Do community college students spend a higher percentage of their study time on math compared with university students? 70 community college students and 70 university students were questioned.',
+        'Do women have more friends than men? 83 women and 78 men were asked how many friends they have.',
+        'Will plants grow larger in artificially fertilized soil than in organic soil? 55 plants were grown in organic soil and 55 plants in artificially fertilized soil.',
+        'Do math students who spend time with a tutor earn a higher class average than those who do not have a math tutor? 43 students who used a tutor and 72 students who did not use a tutor took part in the study.',
+        'Are art museums better attended on rainy days than on sunny days? Attendance numbers at the city museum of art were examined for 100 rainy days and 300 sunny days.',
+        'The police chief is interested in whether chases end faster when the officer is on a motorcycle vs. when the officer is in a car. 40 chases with a motorcycle and 40 chases with a car were observed.',
+        'Are dogs messier than cats. 50 dogs and 50 cats were observed to see how many pieces of their dry food was scattered next to their bowls after eating.'
+
+      ],
+      "Hypothesis Test for Paired Data (Dependent Samples)": [
+        'Do people smoke less when the cigarettes cost more? 500 people were tracked before a 30% cigarette tax was imposed, and after the tax was imposed.',
+        'Are more crimes committed during the daylight hours compared to night? Police records from 200 consecutive days were considered.',
+        'Are people happier after they get married? 100 people were asked on a scale from 1 to 10 how happy they were one year before marriage and one year after marriage.',
+        'Does Kirkwood receive more snow on average than Squaw Valley? The snowfall at each resort was measured at each resort for each of the last 25 snowstorms.',
+        'Do older siblings live longer than younger siblings? Seventy-five recently deceased two-child families were observed.', 
+        'Is Reno colder than Sacramento? Daily low temperatures were compared over 100 days.',
+         'Do people spend more time listening to music in their cars than at home? 600 people were asked how many hours they listened at home and how many hours they listened in their cars.',
+        'Do wives spend more money on nonessentials than their husbands? 90 couples were observed.',
+        'Do wives spend more time on household chores than their husbands? 50 wives and their 50 husbands were surveyed.',
+        'Is there evidence to suggest that community college students spend more time at work than at school? 80 community college students were asked about the hours they spent working and the hours they spent at school.',
+
+      ],
+      "Hypothesis Test for the Difference Between 2 Proportions": [
+        'Do left-handed people have a higher tendency to enter careers in health care than right-handed people? 400 lefties and 300 right-handed people were questioned.',
+        'Are skiers more likely than snowboarders to fall on the advanced run? 50 skiers and 50 snowboarders were observed as they went down the run.',
+        'Is the flu shot effective? 1000 people who were given the flu shot and 2000 who were not were asked six months later if they got the flu over the past six months.',
+        'Are sliders at Sierra at Tahoe more likely to spend the night in the basin than sliders at Kirkwood? 50 Sierra-at-Tahoe sliders and 50 Kirkwood sliders were surveyed.',
+        'Are tourists on the North Shore more likely to rent a boat than tourists on the South Shore? 50 North Shore tourists and 50 South Shore tourists were surveyed.',
+        'Are dogs more likely than cats to leave the room when they are scolded? 87 dogs and 42 cats were observed as they were scolded.',
+        'Is a computer without virus protection software more likely to get a virus than a computer with virus protection software? 400 computers without the protection and 700 with the protection were used for a year, and then checked to see if they had a virus.',
+        'Are Stellers Jays eggs more likely to successfully hatch if the nest is in a tree compared to eggs in a nest on a building? 300 eggs in nests in trees and 250 eggs on nests in buildings were observed.',
+        'Are women more likely than men to ask directions when they are lost? Forty-three women and 72 men were surveyed.',
+        'Are people more likely to die of heart disease or cancer? 20,000 death certificates were examined.'
+
+      ],
+      "Chi-Square Goodness of Fit Test": [
+        'Are some age groups more likely to commit crimes than other age groups? The number of crimes for each age group was studied by an investigator.',
+        'Are there some times at which classes are offered more popularly than others? Seven sections of the same math classes were offered, and enrollments of each were tabulated.',
+        'Is the average commute time to work the same for all counties in California? 4000 workers from all over California were asked what county they were born in and how long it took them to commute to work. The statewide average commute is 27 minutes.',
+        'In 1974, each acre of the Tahoe basin was assessed to determine what condition of the soil. 23% of acres were of type I, 32% were of type II, 41% were of type III, and 16% were of type IV. This year, the region was assessed again, and the number of each type was again determined. Is there evidence to suggest that the distribution of soil types has changed since 1974?',
+        'A stadium manager is interested in whether the fans who buy tickets are demographically the same as the general population of the city. Currently, 42% are Caucasian, 35% are Hispanic, 12% are African American, 8% are Asian, and the rest are defined as other.',
+        'The US Census Bureau recently came out with the percentages of Americans who are working in the Service industry, Manufacturing, Unemployed, and Other. A researcher wants to find out if these percentages are different in South Lake Tahoe. 100 people were surveyed.',
+        '76 percent of Americans consider themselves Christian, 4 percent other religion, and the rest have no religion. Is this distribution the same in California? 800 Californians were surveyed.',
+        'You suspect that a casino is using a Roulette wheel that is unfair. You observe the outcome of the wheel 900 times to see if each number is equally likely to be selected.',
+        'Do statistics students follow the same distribution of college majors as the rest of the college? 45 students were queried.',
+        'Are babies equally likely to be born on each day of the week? 800 people were asked on what day of the week they were born.'
+
+      ],
+      "Chi-Square Test for Independence": [
+        'A police investigator is interested in finding a relationship between the weapon that is used for murder and the location where the murder occurs. 800 murder cases were examined.',
+        'Is the type of music that people listen to related to the state in which they were born? 10,000 Americans were asked what type of music they listened to and where they were born.',
+        'Is the type of dog a person owns a predictor of personality type? 5000 people were part of a survey.',
+        'Is the type of television show that a person chooses to watch related to the brand of deodorant that a person uses? 1500 people were surveyed.',
+        'Does knowing what type of living arrangement (hours, apartment, dorm, other) helps predict a student s major (science, humanities, language, other)? Six hundred students were questioned about their living arrangement and their majors.',
+        'Does knowing a person s blood type help to predict their favorite beverage? 1000 people were asked what their blood type is and what type of beverage they most often drink.',
+        'Is eye color a predictor of favorite color?  5000 people were part of a survey.',
+        'Does knowing a person s blood type help to predict their favorite beverage? 1000 people were asked what their blood type is and what type of beverage they most often drink.',
+        '5000 people were asked what their favorite movie is and who their favorite author is. Based on the data, can you conclude that there is a relationship?',
+        'Is race a predictor of political affiliation? 2000 people were surveyed about their race and political affiliation.'
+
+      ],
+      "Chi-Square Test for Homogeneity": [
+        'Have shoe brand preferences changed between last year and this year? 1000 people were observed this year and 500 last year to see what brand of shoe they were wearing.',
+        '400 tourists at the North Shore and 600 tourists at the South Shore were asked where they came from: Northern CA, Southern CA, Out of State, or Out of the Country. Is there a difference in the tourist distribution between South Shore and North Shore?',
+        'Do Democrats and Republicans have the same phone carrier usage? 554 Democrats and 672 Republicans were asked what company they used for their phone service.',
+        'Do men and women watch different television shows? 780 men and 650 women who watched TV on Wednesday at 8:00 PM were asked what show they watched.',
+        'Is the distribution of majors the same for LTCC students as it is for TMCC students? 1800 LTCC students and 2600 TMCC students were surveyed.',
+        'Do the colors of shirts and the colors of pants occur at the same frequency? 300 people were observed for the primary color of their pants, and 300 others were observed for the primary color of their shirts.',
+        'Is the distribution of sports that people play different from the distribution of sports people watch? 800 people were asked what sport they most often played, and 800 others were asked what sport they most often watched.',
+        'Are the frequencies of the letters of the alphabet that Stephen King uses different from the letters that JK Rowling uses? A chapter from a King novel and a chapter from a Rowling novel were looked at.',
+        'Is the racial distribution the same for UCLA and UCSD? 5000 students from each university were asked about their race.',
+        'Do African Americans and Caucasians have the same distribution of blood types? 800 African Americans and 900 Caucasians were tested for blood type.',
+
+      ]
+    };
+
+    const selected = JSON.parse(localStorage.getItem('selectedTests') || '[]');
+    const promptText = document.getElementById('promptText');
+    const options = document.getElementById('options');
+    const nextBtn = document.getElementById('nextBtn');
+    const quitBtn = document.getElementById('quitBtn');
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function getTestCategory(testName) {
+      const name = testName.toLowerCase().trim();
+      if (name.includes("confidence interval")) return "CI";
+      if (name.includes("hypothesis test") || name.includes("hypothesis")) return "HT";
+      if (name.includes("chi-square") || name.includes("chi squared")) return "CS";
+      return "OTHER";
+    }
+
+
+
+    function loadQuestion() {
+      options.innerHTML = '';
+      nextBtn.classList.add('hidden');
+
+      if (selected.length === 0) {
+        promptText.textContent = "No tests selected.";
+        return;
+      }
+
+      const correctTest = selected[Math.floor(Math.random() * selected.length)];
+      const promptList = prompts[correctTest] || [];
+      const question = promptList[Math.floor(Math.random() * promptList.length)] || "Which test is most appropriate?";
+      promptText.textContent = question;
+
+      const correctCategory = getTestCategory(correctTest);
+      const selectedCategories = new Set(selected.map(getTestCategory));
+
+      let choices = [];
+
+      const allCI = testNames.filter(name => getTestCategory(name) === "CI");
+      const allHT = testNames.filter(name => getTestCategory(name) === "HT");
+      const allCS = testNames.filter(name => getTestCategory(name) === "CS");
+
+      const selectedTypes = {
+        hasCI: selectedCategories.has("CI"),
+        hasHT: selectedCategories.has("HT"),
+        hasCS: selectedCategories.has("CS")
+      };
+
+      if (selectedTypes.hasCI && selectedTypes.hasHT && selectedTypes.hasCS) {
+        choices = [...new Set([...allCI, ...allHT, ...allCS])];
+      } else if (selectedTypes.hasCI && selectedTypes.hasHT) {
+        choices = [...new Set([...allCI, ...allHT])];
+      } else if (selectedTypes.hasCI && selectedTypes.hasCS) {
+        choices = [...new Set([...allCI, ...allCS])];
+      } else if (selectedTypes.hasHT && selectedTypes.hasCS) {
+        choices = [...new Set([...allHT, ...allCS])];
+      } else if (selectedTypes.hasCI) {
+        choices = [...allCI];
+      } else if (selectedTypes.hasHT) {
+        choices = [...allHT];
+      } else if (selectedTypes.hasCS) {
+        const distractors = allCS.filter(t => t !== correctTest).slice(0, 3);
+        choices = [correctTest, ...distractors];
+      }
+
+     
+      if (!choices.includes(correctTest)) choices.push(correctTest);
+
+      choices = testNames.filter(name => choices.includes(name));
+
+      choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.textContent = choice;
+        btn.className = 'block w-full text-left bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded';
+        btn.dataset.correct = (choice === correctTest).toString();
+
+        btn.onclick = () => {
+          if (btn.dataset.correct === "true") {
+            btn.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+            btn.classList.add('bg-green-300');
+            document.querySelectorAll('#options button').forEach(b => b.disabled = true);
+            nextBtn.classList.remove('hidden');
+          } else {
+            btn.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+            btn.classList.add('bg-red-300');
+            btn.disabled = true;
+          }
+        };
+        options.appendChild(btn);
+      });
+    }
+
+
+
+
+    nextBtn.onclick = loadQuestion;
+    quitBtn.onclick = () => {
+      localStorage.removeItem('selectedTests');
+      window.location.href = 'index.html';
+    };
+
+    loadQuestion();
+  </script>
+</body>
+</html>
